@@ -509,6 +509,8 @@
     --indigo: #6366F1;
     --orange: #F97316;
   }
+  .btn-sim.violet { border-color: var(--violet-light); color: var(--violet-light); }
+  .btn-sim.violet:hover { background: rgba(167,139,250,0.1); }
   .tag-teal   { color: var(--teal);   border-color: rgba(20,184,166,0.3);  background: rgba(20,184,166,0.05); }
   .tag-indigo { color: var(--indigo); border-color: rgba(99,102,241,0.3);  background: rgba(99,102,241,0.05); }
   .tag-orange { color: var(--orange); border-color: rgba(249,115,22,0.3);  background: rgba(249,115,22,0.05); }
@@ -557,9 +559,12 @@
     <a href="#tema3">Plano Inclinado</a>
     <a href="#tema4">Sistema Polea</a>
     <a href="#tema5">Curva Fricción</a>
-    <a href="#tema6" style="color:var(--cyan);opacity:0.7">Conservación</a>
-    <a href="#tema7" style="color:var(--cyan);opacity:0.7">Gravitación</a>
-    <a href="#tema8" style="color:var(--cyan);opacity:0.7">Oscilaciones</a>
+    <a href="#tema6" style="color:var(--teal);opacity:0.85">Mom. Lineal</a>
+    <a href="#tema7" style="color:var(--teal);opacity:0.85">Gravitación</a>
+    <a href="#tema8" style="color:var(--teal);opacity:0.85">Oscilaciones</a>
+    <a href="#tema9" style="color:var(--indigo);opacity:0.85">Mom. Angular</a>
+    <a href="#tema10" style="color:var(--indigo);opacity:0.85">Torque</a>
+    <a href="#tema11" style="color:var(--indigo);opacity:0.85">Exploración Esp.</a>
   </div>
 </nav>
 
@@ -842,7 +847,7 @@
 
 
   <!-- DIVIDER AVANCE 2 -->
-  <div class="avance-divider"><span>Avance 2 — Temas 6 · 7 · 8</span></div>
+  <div class="avance-divider"><span>Avance 2 — Temas 6 · 7 · 8 · 9 · 10 · 11</span></div>
 
   <!-- ═══════════════════════════════════════════
        TEMA 6 · LEYES DE CONSERVACIÓN
@@ -851,8 +856,8 @@
     <div class="content-stack">
       <div class="topic-header">
         <span class="topic-number">TEMA 06 · CONSERVACIÓN</span>
-        <h2 class="topic-title">Leyes de<br>Conservación</h2>
-        <span class="topic-tag tag-teal">Módulo: Energía y Momento</span>
+        <h2 class="topic-title">Conservación del<br>Momento Lineal</h2>
+        <span class="topic-tag tag-teal">Módulo: Momento Lineal</span>
       </div>
 
       <div class="card">
@@ -1016,6 +1021,181 @@
         <button class="btn-sim orange" onclick="launchSim8()">▶ Oscilar</button>
       </div>
       <div class="readout" id="s8_readout">Ajusta los parámetros y presiona Oscilar.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 9 · MOMENTO ANGULAR
+  ════════════════════════════════════════════ -->
+  <section id="tema9" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 09 · CONSERVACIÓN</span>
+        <h2 class="topic-title">Conservación del<br>Momento Angular</h2>
+        <span class="topic-tag tag-indigo">Módulo: Momento Angular</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Control de orientación de satélites con ruedas de reacción (ADCS)</h3>
+        <p>El sistema de control de actitud y determinación (ADCS) de un satélite usa ruedas de reacción para orientar la nave sin gastar combustible. El principio es conservación de momento angular: si la rueda acelera en un sentido, el cuerpo del satélite gira en el sentido opuesto. El software de vuelo calcula exactamente cuánta aceleración angular aplicar a cada rueda para alcanzar la orientación deseada.</p>
+        <div class="equation-block indigo">
+          L = I·ω  (momento angular = inercia × vel. angular)<br>
+          L_total = L_satélite + L_rueda = constante<br>
+          ΔL_rueda = −ΔL_satélite<br>
+          τ = dL/dt → sin torque externo: L = cte
+        </div>
+        <p>El software de control (típicamente en C embebido) lee los giroscopios, calcula la diferencia entre orientación actual y objetivo, y envía comandos PWM a los motores de las ruedas aplicando la ley de conservación directamente. CubeSats como los de la Universidad de Cornell usan esta técnica con procesadores de 32 bits corriendo a 10 Hz de loop de control.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Sin modelar el momento angular, el controlador no podría predecir cuánto girará el satélite ante un comando de rueda, obligando a un sistema puramente reactivo que oscilaría continuamente. <strong>La conservación de L permite al software calcular el comando exacto de forma feedforward</strong>, logrando maniobras suaves y precisas con mínimo consumo energético.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot indigo"></span>SIMULACIÓN — Satélite con rueda de reacción</div>
+        <button class="btn-sim indigo" onclick="resetSim9()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c9" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">I_sat (kg·m²)</span>
+          <input type="range" class="indigo" id="s9_isat" min="1" max="20" value="8" step="1">
+          <span class="control-val" id="s9_isat_val">8</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">I_rueda (kg·m²)</span>
+          <input type="range" class="indigo" id="s9_irw" min="0.1" max="3" value="0.5" step="0.1">
+          <span class="control-val" id="s9_irw_val">0.50</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">α_rueda (rad/s²)</span>
+          <input type="range" class="indigo" id="s9_alpha" min="0.5" max="10" value="3" step="0.5">
+          <span class="control-val" id="s9_alpha_val">3.0</span>
+        </div>
+        <button class="btn-sim indigo" onclick="launchSim9()">▶ Activar rueda</button>
+      </div>
+      <div class="readout" id="s9_readout">ω_sat = 0 rad/s · ω_rueda = 0 rad/s · L_total = 0 kg·m²/s</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 10 · TORQUE
+  ════════════════════════════════════════════ -->
+  <section id="tema10" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 10 · DINÁMICA ROTACIONAL</span>
+        <h2 class="topic-title">Torque y<br>Segunda Ley Rotacional</h2>
+        <span class="topic-tag tag-orange">Módulo: Dinámica Rotacional</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Control de brazos robóticos industriales (ROS + MoveIt)</h3>
+        <p>Los brazos robóticos como los de KUKA o ABB usan controladores de torque implementados en ROS/MoveIt para mover cada articulación con precisión. El software calcula el torque necesario en cada motor para vencer la inercia del eslabón, la gravedad y las fuerzas de la carga, usando la segunda ley de Newton rotacional: τ = I·α. El modelo de dinámica inversa resuelve qué torques necesita cada motor dado un movimiento deseado.</p>
+        <div class="equation-block orange">
+          τ = r × F = r·F·sin(θ)  (torque)<br>
+          τ_neto = I·α  (2ª ley rotacional)<br>
+          I = Σ mᵢ·rᵢ²  (momento de inercia)<br>
+          W_rotacional = τ·Δθ
+        </div>
+        <p>MoveIt calcula en tiempo real la matriz de inercia del robot completo (que cambia con cada configuración articular) y resuelve el sistema de ecuaciones de torque para cada uno de los 6+ motores. Un error en el modelo de torque de 5% puede provocar vibraciones mecánicas o sobrecalentamiento de motores, por lo que la precisión del modelo físico es crítica.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Sin el modelo de torque, el software de control solo podría usar retroalimentación de posición (PID puro), que reacciona tarde ante cargas variables y genera movimientos bruscos. <strong>El modelo de torque feedforward permite movimientos suaves, rápidos y energéticamente eficientes</strong>, reduciendo el tiempo de ciclo industrial hasta un 30 % según estudios de ABB.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot orange"></span>SIMULACIÓN — Brazo robótico (1 articulación)</div>
+        <button class="btn-sim orange" onclick="resetSim10()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c10" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">Longitud L (m)</span>
+          <input type="range" class="orange" id="s10_L" min="0.5" max="3" value="1.5" step="0.1">
+          <span class="control-val" id="s10_L_val">1.5 m</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Masa M (kg)</span>
+          <input type="range" class="orange" id="s10_M" min="1" max="20" value="5" step="1">
+          <span class="control-val" id="s10_M_val">5 kg</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Torque τ (N·m)</span>
+          <input type="range" class="orange" id="s10_tau" min="5" max="200" value="60" step="5">
+          <span class="control-val" id="s10_tau_val">60 N·m</span>
+        </div>
+        <button class="btn-sim orange" onclick="launchSim10()">▶ Aplicar torque</button>
+      </div>
+      <div class="readout" id="s10_readout">θ = 0° · ω = 0 rad/s · τ_grav = 0 N·m</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 11 · EXPLORACIÓN ESPACIAL
+  ════════════════════════════════════════════ -->
+  <section id="tema11" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 11 · APLICACIÓN ESPACIAL</span>
+        <h2 class="topic-title">Exploración<br>Espacial</h2>
+        <span class="topic-tag tag-violet">Módulo: Gravitación Aplicada</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Planificación de maniobras de transferencia orbital (Maniobra de Hohmann)</h3>
+        <p>El software de misiones de la NASA y ESA planifica maniobras de transferencia orbital (Hohmann transfer) para mover naves entre órbitas con el mínimo gasto de combustible. La maniobra consiste en dos burns precisos: el primero eleva el apogeo hasta la órbita destino, el segundo circula la órbita en ese punto. El software calcula los Δv exactos de cada burn usando mecánica orbital kepleriana.</p>
+        <div class="equation-block violet">
+          Δv₁ = √(μ/r₁)·(√(2r₂/(r₁+r₂)) − 1)<br>
+          Δv₂ = √(μ/r₂)·(1 − √(2r₁/(r₁+r₂)))<br>
+          Δv_total = Δv₁ + Δv₂<br>
+          μ = G·M_Tierra = 3.986×10¹⁴ m³/s²
+        </div>
+        <p>El software de vuelo del Mars Reconnaissance Orbiter, por ejemplo, calculó maniobras de aerobraking y Hohmann que duraron meses y requirieron que cada burn tuviera un error menor a 0.1 m/s. Herramientas como GMAT (NASA) y Orekit (ESA) implementan estos cálculos en Java y C++ con precisión de doble punto flotante para minimizar el error acumulado.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>La maniobra de Hohmann es óptima en dos burns: cualquier otra trayectoria consume más propelente. <strong>Calcular el Δv mínimo es literalmente la diferencia entre una misión exitosa y quedarse sin combustible antes de llegar</strong>. El software espacial hace de la física orbital su función más crítica, donde un error de cálculo puede significar la pérdida de una misión de miles de millones de dólares.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot violet"></span>SIMULACIÓN — Maniobra de Hohmann</div>
+        <button class="btn-sim violet" onclick="resetSim11()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c11" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">Órbita inicial (km)</span>
+          <input type="range" class="violet" id="s11_r1" min="300" max="2000" value="400" step="50">
+          <span class="control-val" id="s11_r1_val">400 km</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Órbita destino (km)</span>
+          <input type="range" class="violet" id="s11_r2" min="500" max="36000" value="1200" step="100">
+          <span class="control-val" id="s11_r2_val">1200 km</span>
+        </div>
+        <button class="btn-sim violet" onclick="launchSim11()">▶ Ejecutar maniobra</button>
+      </div>
+      <div class="readout" id="s11_readout">Configura órbitas inicial y destino.</div>
     </div>
   </section>
 
@@ -2147,6 +2327,448 @@ function launchSim8() {
   });
 });
 drawSim8Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 9 — MOMENTO ANGULAR (Satélite + rueda reacción)
+════════════════════════════════════════════════════ */
+let sim9 = { raf: null };
+
+function resetSim9() {
+  cancelAnimationFrame(sim9.raf);
+  sim9 = { raf: null };
+  drawSim9Static();
+  document.getElementById('s9_readout').textContent = 'ω_sat = 0 rad/s · ω_rueda = 0 rad/s · L_total = 0 kg·m²/s';
+}
+
+function drawSim9Static() {
+  const canvas = document.getElementById('c9');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2;
+  // satellite body
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.fillStyle = 'rgba(99,102,241,0.15)';
+  ctx.fillRect(-30*dpr, -20*dpr, 60*dpr, 40*dpr);
+  ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 2*dpr;
+  ctx.strokeRect(-30*dpr, -20*dpr, 60*dpr, 40*dpr);
+  // solar panels
+  ctx.fillStyle = 'rgba(99,102,241,0.1)';
+  ctx.fillRect(-90*dpr, -8*dpr, 50*dpr, 16*dpr);
+  ctx.fillRect(40*dpr,  -8*dpr, 50*dpr, 16*dpr);
+  ctx.strokeStyle = 'rgba(99,102,241,0.5)'; ctx.lineWidth = 1*dpr;
+  ctx.strokeRect(-90*dpr, -8*dpr, 50*dpr, 16*dpr);
+  ctx.strokeRect(40*dpr,  -8*dpr, 50*dpr, 16*dpr);
+  // reaction wheel (circle inside)
+  ctx.beginPath(); ctx.arc(0, 0, 10*dpr, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(165,243,252,0.2)'; ctx.fill();
+  ctx.strokeStyle = '#A5F3FC'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+  ctx.restore();
+  // labels
+  ctx.fillStyle = '#6366F1'; ctx.font = `${10*dpr}px JetBrains Mono`;
+  ctx.fillText('SATÉLITE', cx - 22*dpr, cy + 35*dpr);
+  ctx.fillStyle = '#A5F3FC';
+  ctx.fillText('rueda', cx - 12*dpr, cy + 5*dpr);
+}
+
+function launchSim9() {
+  cancelAnimationFrame(sim9.raf);
+  const I_sat = parseFloat(document.getElementById('s9_isat').value);
+  const I_rw  = parseFloat(document.getElementById('s9_irw').value);
+  const alpha  = parseFloat(document.getElementById('s9_alpha').value); // rueda alpha
+
+  const canvas = document.getElementById('c9');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+
+  let t = 0;
+  let omega_rw = 0;   // rueda: accelerates
+  let theta_sat = 0;  // satellite angle (rad)
+
+  function step() {
+    t += 0.016;
+    omega_rw += alpha * 0.016;
+    // conservation: I_sat * omega_sat + I_rw * omega_rw = 0 (start from rest)
+    const omega_sat = -(I_rw * omega_rw) / I_sat;
+    theta_sat += omega_sat * 0.016;
+    const L_total = I_sat * omega_sat + I_rw * omega_rw;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // rotating satellite
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(theta_sat);
+
+    // satellite body
+    ctx.fillStyle = 'rgba(99,102,241,0.15)';
+    ctx.fillRect(-30*dpr, -20*dpr, 60*dpr, 40*dpr);
+    ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 2*dpr;
+    ctx.strokeRect(-30*dpr, -20*dpr, 60*dpr, 40*dpr);
+    // solar panels
+    ctx.fillStyle = 'rgba(99,102,241,0.1)';
+    ctx.fillRect(-90*dpr, -8*dpr, 50*dpr, 16*dpr);
+    ctx.fillRect(40*dpr,  -8*dpr, 50*dpr, 16*dpr);
+    ctx.strokeStyle = 'rgba(99,102,241,0.5)'; ctx.lineWidth = 1*dpr;
+    ctx.strokeRect(-90*dpr, -8*dpr, 50*dpr, 16*dpr);
+    ctx.strokeRect(40*dpr,  -8*dpr, 50*dpr, 16*dpr);
+
+    // spinning wheel (counter-rotate relative to body)
+    ctx.save();
+    ctx.rotate(-theta_sat + omega_rw * t * 0.3); // wheel spins fast
+    ctx.beginPath(); ctx.arc(0, 0, 10*dpr, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(165,243,252,0.25)'; ctx.fill();
+    ctx.strokeStyle = '#A5F3FC'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+    // spoke
+    ctx.strokeStyle = '#A5F3FC'; ctx.lineWidth = 1*dpr;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, -9*dpr); ctx.stroke();
+    ctx.restore();
+
+    ctx.restore();
+
+    // orientation indicator arc
+    ctx.strokeStyle = 'rgba(99,102,241,0.3)'; ctx.lineWidth = 1*dpr;
+    ctx.setLineDash([3*dpr,3*dpr]);
+    ctx.beginPath(); ctx.arc(cx, cy, 70*dpr, -Math.PI/2, -Math.PI/2 + theta_sat, theta_sat < 0);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    document.getElementById('s9_readout').textContent =
+      `ω_sat = ${omega_sat.toFixed(4)} rad/s · ω_rueda = ${omega_rw.toFixed(3)} rad/s · θ_sat = ${(theta_sat*180/Math.PI).toFixed(2)}° · L = ${L_total.toFixed(4)} kg·m²/s`;
+
+    if (t < 8) sim9.raf = requestAnimationFrame(step);
+  }
+  sim9.raf = requestAnimationFrame(step);
+}
+
+['s9_isat','s9_irw','s9_alpha'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    const v = parseFloat(this.value);
+    document.getElementById(id+'_val').textContent =
+      id === 's9_irw' ? v.toFixed(2) : id === 's9_alpha' ? v.toFixed(1) : v;
+    drawSim9Static();
+  });
+});
+drawSim9Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 10 — TORQUE (Brazo robótico 1 DOF)
+════════════════════════════════════════════════════ */
+let sim10 = { raf: null };
+
+function resetSim10() {
+  cancelAnimationFrame(sim10.raf);
+  sim10 = { raf: null };
+  drawSim10Static();
+  document.getElementById('s10_readout').textContent = 'θ = 0° · ω = 0 rad/s · τ_grav = 0 N·m';
+}
+
+function drawSim10Static() {
+  const canvas = document.getElementById('c10');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const pivotX = W * 0.25, pivotY = H * 0.6;
+  const L = parseFloat(document.getElementById('s10_L').value);
+  const dispL = Math.min(L * 80 * dpr, W * 0.55);
+  // pivot base
+  ctx.fillStyle = 'rgba(249,115,22,0.3)';
+  ctx.beginPath(); ctx.arc(pivotX, pivotY, 10*dpr, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#F97316'; ctx.lineWidth = 2*dpr; ctx.stroke();
+  // arm (horizontal rest)
+  ctx.strokeStyle = '#F97316'; ctx.lineWidth = 5*dpr;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(pivotX + dispL, pivotY); ctx.stroke();
+  // end effector
+  ctx.beginPath(); ctx.arc(pivotX + dispL, pivotY, 8*dpr, 0, Math.PI*2);
+  ctx.fillStyle = '#FDBA74'; ctx.globalAlpha = 0.8; ctx.fill(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#F97316'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+}
+
+function launchSim10() {
+  cancelAnimationFrame(sim10.raf);
+  const L   = parseFloat(document.getElementById('s10_L').value);
+  const M   = parseFloat(document.getElementById('s10_M').value);
+  const tau = parseFloat(document.getElementById('s10_tau').value);
+  const g   = 9.8;
+  // Moment of inertia of rod about end: I = (1/3)ML²
+  const I   = (1/3) * M * L * L;
+
+  const canvas = document.getElementById('c10');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const pivotX = W * 0.25, pivotY = H * 0.6;
+  const dispL = Math.min(L * 80 * dpr, W * 0.55);
+
+  let theta = 0;    // angle from horizontal (rad)
+  let omega = 0;    // angular velocity
+
+  function step() {
+    // gravity torque: τ_grav = -Mg(L/2)cos(theta) (opposes upward motion)
+    const tau_grav = -M * g * (L / 2) * Math.cos(theta);
+    const tau_net  = tau + tau_grav;
+    const alpha    = tau_net / I;
+    omega += alpha * 0.016;
+    theta += omega * 0.016;
+
+    // stop at top (theta = π/2) or if falls below horizontal
+    if (theta > Math.PI / 2) { theta = Math.PI / 2; omega = 0; }
+    if (theta < -Math.PI / 2) { theta = -Math.PI / 2; omega = 0; }
+
+    ctx.clearRect(0, 0, W, H);
+
+    // ground line
+    ctx.strokeStyle = 'rgba(249,115,22,0.1)'; ctx.lineWidth = 1*dpr;
+    ctx.beginPath(); ctx.moveTo(0, pivotY); ctx.lineTo(W, pivotY); ctx.stroke();
+
+    // torque arc indicator
+    const arcR = 40*dpr;
+    ctx.strokeStyle = 'rgba(249,115,22,0.4)'; ctx.lineWidth = 2*dpr;
+    ctx.beginPath(); ctx.arc(pivotX, pivotY, arcR, -Math.PI/2, -Math.PI/2 + theta, false);
+    ctx.stroke();
+
+    // arm
+    const ex = pivotX + dispL * Math.cos(theta);
+    const ey = pivotY - dispL * Math.sin(theta);
+
+    ctx.strokeStyle = '#F97316'; ctx.lineWidth = 5*dpr; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(ex, ey); ctx.stroke();
+
+    // torque arrow at pivot
+    const arrowR = 30*dpr;
+    ctx.strokeStyle = '#FED7AA'; ctx.lineWidth = 2*dpr;
+    ctx.beginPath();
+    ctx.arc(pivotX, pivotY, arrowR, -Math.PI*0.9, -Math.PI*0.1, false);
+    ctx.stroke();
+
+    // pivot
+    ctx.beginPath(); ctx.arc(pivotX, pivotY, 10*dpr, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(249,115,22,0.3)'; ctx.fill();
+    ctx.strokeStyle = '#F97316'; ctx.lineWidth = 2*dpr; ctx.stroke();
+
+    // end effector
+    ctx.beginPath(); ctx.arc(ex, ey, 8*dpr, 0, Math.PI*2);
+    ctx.fillStyle = '#FDBA74'; ctx.globalAlpha = 0.9; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#F97316'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+
+    // theta label
+    ctx.fillStyle = '#F97316'; ctx.font = `${10*dpr}px JetBrains Mono`;
+    ctx.fillText(`θ=${(theta*180/Math.PI).toFixed(1)}°`, pivotX + 50*dpr, pivotY - 10*dpr);
+
+    document.getElementById('s10_readout').textContent =
+      `θ = ${(theta*180/Math.PI).toFixed(1)}° · ω = ${omega.toFixed(3)} rad/s · τ_motor = ${tau} N·m · τ_grav = ${tau_grav.toFixed(1)} N·m · α = ${alpha.toFixed(3)} rad/s²`;
+
+    if (Math.abs(theta) < Math.PI / 2 - 0.01 && Math.abs(omega) > 0.001 || (theta === 0 && omega === 0 && alpha !== 0))
+      sim10.raf = requestAnimationFrame(step);
+    else if (Math.abs(theta) < Math.PI / 2 - 0.01)
+      sim10.raf = requestAnimationFrame(step);
+  }
+  sim10.raf = requestAnimationFrame(step);
+}
+
+['s10_L','s10_M','s10_tau'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    const v = parseFloat(this.value);
+    const suffix = id === 's10_L' ? ' m' : id === 's10_M' ? ' kg' : ' N·m';
+    document.getElementById(id+'_val').textContent = v + suffix;
+    drawSim10Static();
+  });
+});
+drawSim10Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 11 — EXPLORACIÓN ESPACIAL (Maniobra Hohmann)
+════════════════════════════════════════════════════ */
+let sim11 = { raf: null };
+
+function resetSim11() {
+  cancelAnimationFrame(sim11.raf);
+  sim11 = { raf: null };
+  drawSim11Static();
+  document.getElementById('s11_readout').textContent = 'Configura órbitas inicial y destino.';
+}
+
+function drawSim11Static() {
+  const canvas = document.getElementById('c11');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W/2, cy = H/2;
+  const R_earth_px = 18*dpr;
+  // Earth
+  ctx.beginPath(); ctx.arc(cx, cy, R_earth_px, 0, Math.PI*2);
+  const g = ctx.createRadialGradient(cx-5*dpr,cy-5*dpr,2*dpr,cx,cy,R_earth_px);
+  g.addColorStop(0,'#4F8EF7'); g.addColorStop(1,'#1A3A6B');
+  ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = 'rgba(124,58,237,0.4)'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+  // orbit hints
+  const r1_alt = parseFloat(document.getElementById('s11_r1').value);
+  const r2_alt = parseFloat(document.getElementById('s11_r2').value);
+  const R_earth_km = 6371;
+  const r1_km = R_earth_km + r1_alt;
+  const r2_km = R_earth_km + r2_alt;
+  const maxKm = R_earth_km + 36000;
+  const scl = (W/2 - 25*dpr) / maxKm;
+  const r1_px = Math.max(r1_km * scl, 20*dpr);
+  const r2_px = Math.max(r2_km * scl, 20*dpr);
+  ctx.strokeStyle = 'rgba(124,58,237,0.25)'; ctx.lineWidth = 1*dpr; ctx.setLineDash([3*dpr,4*dpr]);
+  ctx.beginPath(); ctx.arc(cx, cy, r1_px, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,229,255,0.2)';
+  ctx.beginPath(); ctx.arc(cx, cy, r2_px, 0, Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+  // satellite on inner orbit
+  ctx.beginPath(); ctx.arc(cx + r1_px, cy, 5*dpr, 0, Math.PI*2);
+  ctx.fillStyle = '#A78BFA'; ctx.globalAlpha = 0.8; ctx.fill(); ctx.globalAlpha = 1;
+}
+
+function launchSim11() {
+  cancelAnimationFrame(sim11.raf);
+  const alt1 = parseFloat(document.getElementById('s11_r1').value);
+  const alt2 = parseFloat(document.getElementById('s11_r2').value);
+  if (alt2 <= alt1) {
+    document.getElementById('s11_readout').textContent = '⚠ La órbita destino debe ser mayor que la inicial.';
+    return;
+  }
+  const mu = 3.986e14;
+  const R_earth = 6371e3;
+  const r1 = R_earth + alt1 * 1e3;
+  const r2 = R_earth + alt2 * 1e3;
+  const a_transfer = (r1 + r2) / 2;
+  const dv1 = Math.sqrt(mu/r1) * (Math.sqrt(2*r2/(r1+r2)) - 1);
+  const dv2 = Math.sqrt(mu/r2) * (1 - Math.sqrt(2*r1/(r1+r2)));
+  const dv_total = dv1 + dv2;
+  const T_transfer = Math.PI * Math.sqrt(a_transfer**3 / mu); // half-period
+
+  const canvas = document.getElementById('c11');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const R_earth_km = 6371;
+  const maxKm = R_earth_km + 36000;
+  const scl = (W/2 - 25*dpr) / maxKm;
+  const r1_px = (R_earth_km + alt1) * scl;
+  const r2_px = (R_earth_km + alt2) * scl;
+  const a_px  = (r1_px + r2_px) / 2;
+  const ecc_t = (r2_px - r1_px) / (r2_px + r1_px);
+  const b_px  = Math.max(a_px * Math.sqrt(Math.max(0, 1 - ecc_t * ecc_t)), 4*dpr);
+
+  let phase = 'orbit1';   // 'orbit1' → 'burn1' → 'transfer' → 'burn2' → 'orbit2'
+  let angle1 = 0;         // angle on initial orbit
+  let angle2 = Math.PI;   // angle on final orbit (starts at apogee side)
+  let t_transfer = 0;
+  let transfer_angle = 0; // parametric angle on transfer ellipse
+  const trail = [];
+  const omega1 = Math.sqrt(mu / r1**3);
+  const omega2 = Math.sqrt(mu / r2**3);
+
+  function drawBases() {
+    // Earth
+    ctx.beginPath(); ctx.arc(cx, cy, 18*dpr, 0, Math.PI*2);
+    const g = ctx.createRadialGradient(cx-5*dpr,cy-5*dpr,2*dpr,cx,cy,18*dpr);
+    g.addColorStop(0,'#4F8EF7'); g.addColorStop(1,'#1A3A6B');
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = 'rgba(124,58,237,0.4)'; ctx.lineWidth = 1.5*dpr; ctx.stroke();
+    // orbit 1
+    if (r1_px > 0) {
+      ctx.strokeStyle = 'rgba(124,58,237,0.3)'; ctx.lineWidth = 1*dpr; ctx.setLineDash([3*dpr,4*dpr]);
+      ctx.beginPath(); ctx.arc(cx, cy, r1_px, 0, Math.PI*2); ctx.stroke();
+    }
+    if (r2_px > 0) {
+      ctx.strokeStyle = 'rgba(0,229,255,0.2)';
+      ctx.beginPath(); ctx.arc(cx, cy, r2_px, 0, Math.PI*2); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+
+  function step() {
+    ctx.clearRect(0, 0, W, H);
+    drawBases();
+
+    let sx, sy;
+
+    if (phase === 'orbit1') {
+      angle1 += omega1 * 0.4;
+      sx = cx + r1_px * Math.cos(angle1);
+      sy = cy + r1_px * Math.sin(angle1);
+      if (angle1 >= Math.PI * 2) { phase = 'burn1'; angle1 = 0; }
+    } else if (phase === 'burn1') {
+      // flash and transition instantly
+      phase = 'transfer';
+      transfer_angle = 0;
+      return;
+    } else if (phase === 'transfer') {
+      transfer_angle += 0.012;
+      // ellipse: starts at periapsis (r1_px from center), ends at apoapsis (r2_px)
+      const rx = a_px; const ry = b_px;
+      const ex = cx + rx * Math.cos(Math.PI - transfer_angle) + (r2_px - r1_px)/2 * Math.cos(0);
+      const ey = cy + ry * Math.sin(Math.PI - transfer_angle);
+      // simpler: parametric on ellipse between r1 and r2
+      // use: x = cx - (a_px - r1_px) + a_px * cos(t), y = cy + b_px*sin(t)
+      const offset = a_px - r1_px;
+      sx = cx - offset + a_px * Math.cos(transfer_angle);
+      sy = cy + b_px * Math.sin(transfer_angle);
+      trail.push({x: sx, y: sy, phase:'transfer'});
+      if (transfer_angle >= Math.PI) { phase = 'burn2'; }
+    } else if (phase === 'burn2') {
+      phase = 'orbit2';
+      angle2 = Math.PI;
+      return;
+    } else {
+      angle2 += omega2 * 0.4;
+      sx = cx + r2_px * Math.cos(angle2);
+      sy = cy + r2_px * Math.sin(angle2);
+      if (angle2 >= Math.PI * 3) { cancelAnimationFrame(sim11.raf); return; }
+    }
+
+    // draw trail
+    if (trail.length > 1) {
+      ctx.beginPath();
+      trail.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+      ctx.strokeStyle = 'rgba(250,204,21,0.7)'; ctx.lineWidth = 2*dpr; ctx.stroke();
+    }
+
+    if (!sx) { sim11.raf = requestAnimationFrame(step); return; }
+
+    // satellite
+    ctx.beginPath(); ctx.arc(sx, sy, 5*dpr, 0, Math.PI*2);
+    const satColor = phase === 'transfer' ? '#FDE68A' : phase === 'orbit2' ? '#00E5FF' : '#A78BFA';
+    ctx.fillStyle = satColor; ctx.globalAlpha = 0.95; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = satColor; ctx.lineWidth = 1*dpr; ctx.stroke();
+
+    // burn flash
+    if (phase === 'burn1' || phase === 'burn2') {
+      ctx.beginPath(); ctx.arc(sx, sy, 14*dpr, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(253,186,116,0.4)'; ctx.fill();
+    }
+
+    const phaseLabel = {orbit1:'Órbita inicial', burn1:'🔥 Burn 1 — Δv₁', transfer:'Transferencia', burn2:'🔥 Burn 2 — Δv₂', orbit2:'Órbita destino'}[phase] || phase;
+    document.getElementById('s11_readout').textContent =
+      `${phaseLabel} · Δv₁ = ${dv1.toFixed(1)} m/s · Δv₂ = ${dv2.toFixed(1)} m/s · Δv_total = ${dv_total.toFixed(1)} m/s · T_transfer = ${(T_transfer/60).toFixed(1)} min`;
+
+    sim11.raf = requestAnimationFrame(step);
+  }
+  sim11.raf = requestAnimationFrame(step);
+}
+
+['s11_r1','s11_r2'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    document.getElementById(id+'_val').textContent = parseFloat(this.value) + ' km';
+    drawSim11Static();
+  });
+});
+drawSim11Static();
 </script>
 </body>
 </html>
