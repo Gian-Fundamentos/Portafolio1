@@ -503,11 +503,12 @@
     border-radius: 100px;
   }
 
-  /* extra color tokens for avance 2 */
   :root {
     --teal: #14B8A6;
     --indigo: #6366F1;
     --orange: #F97316;
+    --rose: #FB7185;
+    --sky: #38BDF8;
   }
   .btn-sim.violet { border-color: var(--violet-light); color: var(--violet-light); }
   .btn-sim.violet:hover { background: rgba(167,139,250,0.1); }
@@ -529,6 +530,18 @@
   .btn-sim.indigo:hover { background: rgba(99,102,241,0.1); }
   .btn-sim.orange { border-color: var(--orange); color: var(--orange); }
   .btn-sim.orange:hover { background: rgba(249,115,22,0.1); }
+  .tag-rose   { color: var(--rose); border-color: rgba(251,113,133,0.3); background: rgba(251,113,133,0.05); }
+  .tag-sky    { color: var(--sky);  border-color: rgba(56,189,248,0.3);  background: rgba(56,189,248,0.05); }
+  .equation-block.rose { border-color: var(--rose); color: var(--rose); }
+  .equation-block.sky  { border-color: var(--sky);  color: var(--sky); }
+  input[type=range].rose::-webkit-slider-thumb { background: var(--rose); }
+  input[type=range].sky::-webkit-slider-thumb  { background: var(--sky); }
+  .sim-dot.rose { background: var(--rose); }
+  .sim-dot.sky  { background: var(--sky); }
+  .btn-sim.rose { border-color: var(--rose); color: var(--rose); }
+  .btn-sim.rose:hover { background: rgba(251,113,133,0.1); }
+  .btn-sim.sky  { border-color: var(--sky);  color: var(--sky); }
+  .btn-sim.sky:hover  { background: rgba(56,189,248,0.1); }
 </style>
 </head>
 <body>
@@ -565,6 +578,11 @@
     <a href="#tema9" style="color:var(--indigo);opacity:0.85">Mom. Angular</a>
     <a href="#tema10" style="color:var(--indigo);opacity:0.85">Torque</a>
     <a href="#tema11" style="color:var(--indigo);opacity:0.85">Exploración Esp.</a>
+    <a href="#tema12" style="color:var(--rose);opacity:0.85">Péndulo Torsión</a>
+    <a href="#tema13" style="color:var(--rose);opacity:0.85">Ondas Estac.</a>
+    <a href="#tema14" style="color:var(--rose);opacity:0.85">Presión Paredes</a>
+    <a href="#tema15" style="color:var(--rose);opacity:0.85">Bernoulli</a>
+    <a href="#tema16" style="color:var(--rose);opacity:0.85">Cavitación</a>
   </div>
 </nav>
 
@@ -1199,10 +1217,308 @@
     </div>
   </section>
 
+  <!-- DIVIDER AVANCE 3 -->
+  <div class="avance-divider"><span>Avance 3 — Temas 12 · 13 · 14 · 15 · 16</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 12 · PÉNDULO DE TORSIÓN
+  ════════════════════════════════════════════ -->
+  <section id="tema12" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 12 · OSCILACIONES ROTACIONALES</span>
+        <h2 class="topic-title">Péndulo<br>de Torsión</h2>
+        <span class="topic-tag tag-rose">Módulo: Oscilaciones</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Calibración de giroscopios MEMS en smartphones y drones (IMU)</h3>
+        <p>Los giroscopios MEMS (Micro-Electro-Mechanical Systems) dentro de cada smartphone e IMU de dron funcionan como péndulos de torsión microscópicos: una masa suspendida por una viga de silicio gira bajo la fuerza de Coriolis cuando el dispositivo rota. El software de calibración modela este sistema como oscilador de torsión para extraer la constante de torsión κ del material y corregir el offset y deriva del sensor.</p>
+        <div class="equation-block rose">
+          τ = −κ·θ  (par restaurador de torsión)<br>
+          I·θ̈ = −κ·θ  →  ω₀ = √(κ/I)<br>
+          θ(t) = θ₀·cos(ω₀t + φ)<br>
+          T = 2π·√(I/κ)
+        </div>
+        <p>El firmware del MPU-6050 (giroscopio de InvenSense presente en millones de drones y robots) ejecuta un ciclo de auto-calibración que excita el resonador MEMS y mide T para calcular κ/I en tiempo de arranque. Si κ deriva por temperatura, el software ajusta el factor de escala en tiempo real. Sin este modelo de péndulo de torsión, la lectura angular acumularía hasta 10°/s de drift.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Un giroscopio sin modelo de torsión solo puede hacer integración ciega de la señal raw, acumulando error indefinidamente. <strong>Modelar el MEMS como péndulo de torsión permite al software separar la señal física del ruido mecánico</strong>, reduciendo el drift de navegación de drones autónomos de metros por minuto a centímetros por minuto.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot rose"></span>SIMULACIÓN — Oscilador de torsión amortiguado</div>
+        <button class="btn-sim rose" onclick="resetSim12()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c12" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">κ (N·m/rad)</span>
+          <input type="range" class="rose" id="s12_k" min="0.5" max="10" value="3" step="0.5">
+          <span class="control-val" id="s12_k_val">3.0</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">I (kg·m²)</span>
+          <input type="range" class="rose" id="s12_I" min="0.1" max="2" value="0.5" step="0.1">
+          <span class="control-val" id="s12_I_val">0.50</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">θ₀ (°)</span>
+          <input type="range" class="rose" id="s12_th" min="10" max="90" value="45" step="5">
+          <span class="control-val" id="s12_th_val">45°</span>
+        </div>
+        <button class="btn-sim rose" onclick="launchSim12()">▶ Soltar</button>
+      </div>
+      <div class="readout" id="s12_readout">Configura κ, I y ángulo inicial.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 13 · ONDAS ESTACIONARIAS
+  ════════════════════════════════════════════ -->
+  <section id="tema13" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 13 · ONDAS</span>
+        <h2 class="topic-title">Ondas<br>Estacionarias</h2>
+        <span class="topic-tag tag-sky">Módulo: Oscilaciones y Ondas</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Análisis de resonancia en buses de datos PCIe y cables de alta velocidad (Signal Integrity)</h3>
+        <p>En el diseño de PCBs de alta velocidad (PCIe 5.0, DDR5, USB 3.2), el software de análisis de integridad de señal (SI) como Ansys SIwave o Keysight ADS modela las líneas de transmisión como medios donde se forman ondas estacionarias. Cuando la impedancia no está adaptada, las reflexiones crean nodos y antinodos de voltaje que distorsionan la señal y generan errores de bit.</p>
+        <div class="equation-block sky">
+          y(x,t) = 2A·sin(kx)·cos(ωt)<br>
+          Nodos: x = nλ/2  (n = 0,1,2,...)<br>
+          Antinodos: x = (2n+1)λ/4<br>
+          Condición: L = n·λ/2  →  fₙ = n·v/(2L)
+        </div>
+        <p>El software calcula los armónicos de resonancia de cada traza del PCB y los compara contra el espectro de la señal de clock para detectar frecuencias donde se forman antinodos de voltaje (picos de emisiones EMI). Un antinodo en 5 GHz en una traza de 15 mm puede causar que la tarjeta falle la certificación FCC, obligando al rediseño del layout.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Sin modelar ondas estacionarias, el ingeniero de hardware solo detectaría el problema en la cámara anecoica de certificación EMC, cuando ya es costoso corregirlo. <strong>El modelo de ondas estacionarias permite al software predecir fallas de integridad de señal antes de fabricar el PCB</strong>, ahorrando semanas de rediseño y miles de dólares en prototipos.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot sky"></span>SIMULACIÓN — Modos normales en línea de transmisión</div>
+        <button class="btn-sim sky" onclick="resetSim13()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c13" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">Modo n</span>
+          <input type="range" class="sky" id="s13_n" min="1" max="6" value="1" step="1">
+          <span class="control-val" id="s13_n_val">1</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Amplitud A</span>
+          <input type="range" class="sky" id="s13_amp" min="0.2" max="1" value="0.7" step="0.05">
+          <span class="control-val" id="s13_amp_val">0.70</span>
+        </div>
+        <button class="btn-sim sky" onclick="launchSim13()">▶ Animar</button>
+      </div>
+      <div class="readout" id="s13_readout">Selecciona modo armónico y presiona Animar.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 14 · PRESIÓN SOBRE PAREDES
+  ════════════════════════════════════════════ -->
+  <section id="tema14" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 14 · FLUIDOS</span>
+        <h2 class="topic-title">Presión<br>sobre Paredes</h2>
+        <span class="topic-tag tag-teal">Módulo: Fluidos</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Simulación estructural de tanques de almacenamiento en plantas industriales (FEA/CFD)</h3>
+        <p>El software de análisis de elementos finitos (FEA) como ANSYS Mechanical calcula la distribución de presión hidrostática sobre las paredes de tanques de almacenamiento industrial para determinar el espesor mínimo de acero requerido. La presión aumenta linealmente con la profundidad, y el software integra esa distribución para obtener la fuerza total sobre cada panel de la pared.</p>
+        <div class="equation-block teal">
+          P(h) = P₀ + ρ·g·h  (presión hidrostática)<br>
+          F_total = ∫₀ᴴ P(h)·w·dh = ρ·g·H²·w/2<br>
+          Punto de aplicación: h_cp = 2H/3<br>
+          σ_pared = F / (t·w)  (esfuerzo en la pared)
+        </div>
+        <p>ANSYS aplica esta distribución como carga de presión variable en cada nodo del mesh de la pared, calcula el campo de esfuerzos resultante y lo compara con el límite de fluencia del acero (ASTM A36: 250 MPa). El software determina automáticamente el factor de seguridad y recomienda el espesor óptimo. Este análisis es obligatorio por norma ASME para tanques de más de 10,000 litros.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Asumir presión uniforme en la pared (error común) subestimaría la fuerza en la base hasta en un 50% para tanques altos. <strong>El perfil de presión hidrostática es la única distribución de carga físicamente correcta</strong>, y el software de FEA la implementa directamente, permitiendo diseñar tanques seguros con el mínimo material necesario.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot teal"></span>SIMULACIÓN — Distribución de presión en tanque</div>
+        <button class="btn-sim teal" onclick="resetSim14()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c14" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">Altura H (m)</span>
+          <input type="range" class="teal" id="s14_H" min="1" max="20" value="8" step="0.5">
+          <span class="control-val" id="s14_H_val">8.0 m</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">ρ fluido (kg/m³)</span>
+          <input type="range" class="teal" id="s14_rho" min="700" max="1500" value="1000" step="50">
+          <span class="control-val" id="s14_rho_val">1000</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Nivel llenado (%)</span>
+          <input type="range" class="teal" id="s14_fill" min="10" max="100" value="80" step="5">
+          <span class="control-val" id="s14_fill_val">80%</span>
+        </div>
+        <button class="btn-sim teal" onclick="drawSim14()">▶ Calcular</button>
+      </div>
+      <div class="readout" id="s14_readout">Configura los parámetros y presiona Calcular.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 15 · PRESIÓN–VELOCIDAD (BERNOULLI)
+  ════════════════════════════════════════════ -->
+  <section id="tema15" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 15 · FLUIDOS</span>
+        <h2 class="topic-title">Bernoulli:<br>Presión y Velocidad</h2>
+        <span class="topic-tag tag-indigo">Módulo: Fluidos</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Diseño de sistemas de refrigeración líquida en centros de datos (CFD)</h3>
+        <p>Los centros de datos modernos (Google, Meta, AWS) usan refrigeración líquida directa donde el software de simulación CFD (Computational Fluid Dynamics) como OpenFOAM aplica el principio de Bernoulli para optimizar el caudal a través de las cañerías de los cold plates de los servidores. En cada estrechamiento de tubería, la velocidad aumenta y la presión baja, lo que determina si el sistema puede mantener el caudal requerido sin cavitar.</p>
+        <div class="equation-block indigo">
+          P₁ + ½ρv₁² + ρgh₁ = P₂ + ½ρv₂² + ρgh₂<br>
+          Continuidad: A₁v₁ = A₂v₂<br>
+          Venturi: v₂ = v₁·√(A₁/A₂)<br>
+          ΔP = ½ρ(v₂² − v₁²)
+        </div>
+        <p>El software calcula el perfil de presiones a lo largo del circuito de refrigeración y verifica que en ningún punto la presión baje por debajo de la presión de vapor del refrigerante (condición de cavitación). OpenFOAM resuelve las ecuaciones de Navier-Stokes numéricamente, pero Bernoulli provee la solución analítica que valida los resultados del solver y dimensiona las bombas correctamente.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Sin Bernoulli, el ingeniero no puede predecir caídas de presión en restricciones de flujo ni seleccionar la bomba correcta sin sobrescalar (desperdicio energético) o subescalar (sobrecalentamiento del servidor). <strong>Bernoulli provee la relación exacta entre geometría de tubería, velocidad y presión</strong>, siendo la herramienta de diseño rápido que antecede toda simulación CFD costosa.</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot indigo"></span>SIMULACIÓN — Efecto Venturi interactivo</div>
+        <button class="btn-sim indigo" onclick="resetSim15()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c15" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">D₁ (cm)</span>
+          <input type="range" class="indigo" id="s15_d1" min="2" max="10" value="6" step="0.5">
+          <span class="control-val" id="s15_d1_val">6.0 cm</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">D₂ (cm)</span>
+          <input type="range" class="indigo" id="s15_d2" min="0.5" max="5" value="2" step="0.25">
+          <span class="control-val" id="s15_d2_val">2.0 cm</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">v₁ (m/s)</span>
+          <input type="range" class="indigo" id="s15_v1" min="0.5" max="5" value="1.5" step="0.25">
+          <span class="control-val" id="s15_v1_val">1.5 m/s</span>
+        </div>
+        <button class="btn-sim indigo" onclick="launchSim15()">▶ Simular flujo</button>
+      </div>
+      <div class="readout" id="s15_readout">Configura diámetros y velocidad de entrada.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TEMA 16 · CAVITACIÓN / GOLPE DE ARIETE
+  ════════════════════════════════════════════ -->
+  <section id="tema16" class="topic fade-in">
+    <div class="content-stack">
+      <div class="topic-header">
+        <span class="topic-number">TEMA 16 · FLUIDOS — FENÓMENOS EXTREMOS</span>
+        <h2 class="topic-title">Cavitación y<br>Golpe de Ariete</h2>
+        <span class="topic-tag tag-rose">Módulo: Fluidos</span>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Caso en Ingeniería del Software</p>
+        <h3>Protección de bombas y tuberías en sistemas SCADA industriales</h3>
+        <p>Los sistemas SCADA (Supervisory Control and Data Acquisition) que controlan plantas de agua potable y sistemas hidráulicos industriales implementan algoritmos de detección y prevención de cavitación y golpe de ariete. La cavitación ocurre cuando la presión local baja por debajo de P_vapor y el fluido hierve localmente, creando burbujas que colapsan con presiones de miles de bar destruyendo impulsores de bomba. El golpe de ariete ocurre al cerrar válvulas bruscamente.</p>
+        <div class="equation-block rose">
+          Cavitación: P_local ≤ P_vapor(T)<br>
+          Golpe de ariete: ΔP = ρ·c·Δv<br>
+          c = √(K/ρ)  (velocidad onda de presión)<br>
+          t_cierre_seguro > 2L/c
+        </div>
+        <p>El software SCADA (Wonderware, Ignition) monitorea la presión en cada nodo de la red y ejecuta una lógica de control que varía la velocidad de las bombas (variador de frecuencia) para mantener P > P_vapor con un margen de seguridad. Para prevenir golpe de ariete, el software impone tiempos mínimos de cierre de válvulas calculados con t > 2L/c, donde L es la longitud de la tubería y c la velocidad de la onda de presión.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Justificación</p>
+        <p>Sin estos modelos físicos, el sistema SCADA solo puede reaccionar después del daño. <strong>Modelar cavitación y golpe de ariete permite al software actuar preventivamente</strong>: ajusta la velocidad de la bomba antes de que P caiga al límite, y limita la tasa de cierre de válvulas para que la sobrepresión de ariete no supere el límite de rotura de la tubería (típicamente 1.5× la presión de operación).</p>
+      </div>
+    </div>
+
+    <div class="sim-panel">
+      <div class="sim-header">
+        <div class="sim-title"><span class="sim-dot rose"></span>SIMULACIÓN — Golpe de ariete en tubería</div>
+        <button class="btn-sim rose" onclick="resetSim16()">Reiniciar</button>
+      </div>
+      <div class="sim-canvas-wrap">
+        <canvas id="c16" height="280"></canvas>
+      </div>
+      <div class="sim-controls">
+        <div class="control-row">
+          <span class="control-label">v₀ fluido (m/s)</span>
+          <input type="range" class="rose" id="s16_v0" min="0.5" max="10" value="3" step="0.5">
+          <span class="control-val" id="s16_v0_val">3.0 m/s</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">L tubería (m)</span>
+          <input type="range" class="rose" id="s16_L" min="10" max="500" value="100" step="10">
+          <span class="control-val" id="s16_L_val">100 m</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">t_cierre (s)</span>
+          <input type="range" class="rose" id="s16_tc" min="0.01" max="5" value="0.5" step="0.05">
+          <span class="control-val" id="s16_tc_val">0.50 s</span>
+        </div>
+        <button class="btn-sim rose" onclick="launchSim16()">▶ Cerrar válvula</button>
+      </div>
+      <div class="readout" id="s16_readout">Configura parámetros y simula el cierre de válvula.</div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
-  FUN-18 · Física I · CENFOTEC · 2026-C2 · Portafolio Avances 1 &amp; 2
+  FUN-18 · Física I · CENFOTEC · 2026-C2 · Portafolio Avances 1, 2 &amp; 3
 </footer>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -2769,6 +3085,746 @@ function launchSim11() {
   });
 });
 drawSim11Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 12 — PÉNDULO DE TORSIÓN
+════════════════════════════════════════════════════ */
+let sim12 = { raf: null };
+
+function resetSim12() {
+  cancelAnimationFrame(sim12.raf);
+  sim12 = { raf: null };
+  drawSim12Static();
+  document.getElementById('s12_readout').textContent = 'Configura κ, I y ángulo inicial.';
+}
+
+function drawSim12Static() {
+  const canvas = document.getElementById('c12');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const cx = W / 2, cy = H / 2;
+  // wire
+  ctx.strokeStyle = 'rgba(251,113,133,0.5)'; ctx.lineWidth = 2 * dpr;
+  ctx.beginPath(); ctx.moveTo(cx, 20 * dpr); ctx.lineTo(cx, cy - 30 * dpr); ctx.stroke();
+  // disk
+  ctx.beginPath(); ctx.arc(cx, cy, 30 * dpr, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(251,113,133,0.15)'; ctx.fill();
+  ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 2 * dpr; ctx.stroke();
+  // spoke at 0°
+  ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 2 * dpr;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + 30 * dpr, cy); ctx.stroke();
+  ctx.fillStyle = '#FB7185';
+  ctx.font = `${10 * dpr}px JetBrains Mono`;
+  ctx.fillText('θ₀', cx + 34 * dpr, cy + 4 * dpr);
+}
+
+function launchSim12() {
+  cancelAnimationFrame(sim12.raf);
+  const kappa = parseFloat(document.getElementById('s12_k').value);
+  const I     = parseFloat(document.getElementById('s12_I').value);
+  const th0   = parseFloat(document.getElementById('s12_th').value) * Math.PI / 180;
+  const gamma = 0.3; // light damping
+  const w0    = Math.sqrt(kappa / I);
+  const wd    = Math.sqrt(Math.max(0, w0 * w0 - gamma * gamma));
+  const T     = 2 * Math.PI / (wd || w0);
+
+  const canvas = document.getElementById('c12');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const diskR = 30 * dpr;
+  const graphLeft = W * 0.55, graphW = W * 0.42, graphMid = H * 0.5, graphAmp = H * 0.35;
+  let t = 0;
+  const trail = [];
+
+  function step() {
+    t += 0.016;
+    const theta = th0 * Math.exp(-gamma * t) * Math.cos(wd * t);
+    const tau   = -kappa * theta;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // ── left: animated disk
+    // wire (twisted)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(251,113,133,0.5)'; ctx.lineWidth = 2 * dpr;
+    const waveAmp = Math.min(Math.abs(theta) * 6 * dpr, 6 * dpr);
+    ctx.beginPath();
+    for (let y = 20 * dpr; y <= cy - diskR; y += 2 * dpr) {
+      const frac = (y - 20 * dpr) / (cy - diskR - 20 * dpr);
+      ctx.lineTo(cx + Math.sin(frac * Math.PI * 4 + t * 3) * waveAmp * (1 - frac), y);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // disk (rotated)
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(theta);
+    ctx.beginPath(); ctx.arc(0, 0, diskR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(251,113,133,0.15)'; ctx.fill();
+    ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 2 * dpr; ctx.stroke();
+    // spoke
+    ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 2.5 * dpr;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(diskR, 0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-diskR, 0); ctx.stroke();
+    ctx.restore();
+
+    // torque arrow arc
+    if (Math.abs(theta) > 0.01) {
+      const dir = theta > 0 ? -1 : 1;
+      ctx.strokeStyle = 'rgba(251,113,133,0.4)'; ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath();
+      ctx.arc(cx, cy, diskR + 12 * dpr, 0, dir * Math.min(Math.abs(theta), Math.PI * 0.8), dir < 0);
+      ctx.stroke();
+    }
+
+    // ── right: θ(t) graph
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 0.5 * dpr;
+    ctx.beginPath(); ctx.moveTo(graphLeft, graphMid); ctx.lineTo(graphLeft + graphW, graphMid); ctx.stroke();
+
+    const tScale = graphW / (T * 3);
+    trail.push({ x: graphLeft + t * tScale, y: graphMid - theta * graphAmp / th0 });
+    if (trail.length > 1) {
+      ctx.beginPath();
+      trail.forEach((p, i) => {
+        if (p.x > graphLeft + graphW) return;
+        i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+      });
+      ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 1.5 * dpr; ctx.stroke();
+    }
+    // envelope
+    const envY1 = graphMid - th0 * Math.exp(-gamma * t) * graphAmp / th0;
+    const envY2 = graphMid + th0 * Math.exp(-gamma * t) * graphAmp / th0;
+    ctx.strokeStyle = 'rgba(251,113,133,0.2)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 3 * dpr]);
+    // draw full envelope
+    ctx.beginPath();
+    for (let tt = 0; tt <= t; tt += 0.05) {
+      const ex = graphLeft + tt * tScale;
+      if (ex > graphLeft + graphW) break;
+      const ey = graphMid - th0 * Math.exp(-gamma * tt) * graphAmp / th0;
+      tt === 0 ? ctx.moveTo(ex, ey) : ctx.lineTo(ex, ey);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    for (let tt = 0; tt <= t; tt += 0.05) {
+      const ex = graphLeft + tt * tScale;
+      if (ex > graphLeft + graphW) break;
+      const ey = graphMid + th0 * Math.exp(-gamma * tt) * graphAmp / th0;
+      tt === 0 ? ctx.moveTo(ex, ey) : ctx.lineTo(ex, ey);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    document.getElementById('s12_readout').textContent =
+      `θ = ${(theta * 180 / Math.PI).toFixed(1)}° · τ = ${tau.toFixed(3)} N·m · ω₀ = ${w0.toFixed(2)} rad/s · T = ${T.toFixed(2)} s · t = ${t.toFixed(2)} s`;
+
+    if (trail[trail.length - 1]?.x < graphLeft + graphW) sim12.raf = requestAnimationFrame(step);
+  }
+  sim12.raf = requestAnimationFrame(step);
+}
+
+['s12_k', 's12_I', 's12_th'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    const v = parseFloat(this.value);
+    document.getElementById(id + '_val').textContent =
+      id === 's12_th' ? v + '°' : v.toFixed(id === 's12_I' ? 2 : 1);
+  });
+});
+drawSim12Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 13 — ONDAS ESTACIONARIAS
+════════════════════════════════════════════════════ */
+let sim13 = { raf: null };
+
+function resetSim13() {
+  cancelAnimationFrame(sim13.raf);
+  sim13 = { raf: null };
+  document.getElementById('s13_readout').textContent = 'Selecciona modo armónico y presiona Animar.';
+  drawSim13Static();
+}
+
+function drawSim13Static() {
+  const canvas = document.getElementById('c13');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const mid = H / 2;
+  const n = parseInt(document.getElementById('s13_n').value);
+  const A = parseFloat(document.getElementById('s13_amp').value);
+  const ampPx = H * 0.35 * A;
+  const pad = 40 * dpr;
+  // string base
+  ctx.strokeStyle = 'rgba(56,189,248,0.2)'; ctx.lineWidth = 1 * dpr;
+  ctx.beginPath(); ctx.moveTo(pad, mid); ctx.lineTo(W - pad, mid); ctx.stroke();
+  // mode shape (snapshot t=0)
+  ctx.strokeStyle = '#38BDF8'; ctx.lineWidth = 2 * dpr;
+  ctx.beginPath();
+  for (let px = pad; px <= W - pad; px++) {
+    const x = (px - pad) / (W - 2 * pad);
+    const y = mid - ampPx * Math.sin(n * Math.PI * x);
+    px === pad ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+  }
+  ctx.stroke();
+  // nodes markers
+  ctx.fillStyle = '#38BDF8';
+  for (let i = 0; i <= n; i++) {
+    const nx = pad + i * (W - 2 * pad) / n;
+    ctx.beginPath(); ctx.arc(nx, mid, 4 * dpr, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function launchSim13() {
+  cancelAnimationFrame(sim13.raf);
+  const n   = parseInt(document.getElementById('s13_n').value);
+  const A   = parseFloat(document.getElementById('s13_amp').value);
+  const canvas = document.getElementById('c13');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const mid = H / 2;
+  const ampPx = H * 0.35 * A;
+  const pad = 40 * dpr;
+  let t = 0;
+
+  function step() {
+    t += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    // string anchor lines
+    ctx.strokeStyle = 'rgba(56,189,248,0.1)'; ctx.lineWidth = 1 * dpr;
+    ctx.beginPath(); ctx.moveTo(pad, mid); ctx.lineTo(W - pad, mid); ctx.stroke();
+    ctx.strokeStyle = 'rgba(56,189,248,0.15)'; ctx.lineWidth = 3 * dpr;
+    ctx.beginPath(); ctx.moveTo(pad, mid - ampPx - 10 * dpr); ctx.lineTo(pad, mid + ampPx + 10 * dpr); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W - pad, mid - ampPx - 10 * dpr); ctx.lineTo(W - pad, mid + ampPx + 10 * dpr); ctx.stroke();
+
+    // traveling wave 1 (right)
+    ctx.strokeStyle = 'rgba(56,189,248,0.25)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([4 * dpr, 4 * dpr]);
+    ctx.beginPath();
+    for (let px = pad; px <= W - pad; px++) {
+      const x = (px - pad) / (W - 2 * pad);
+      const y = mid - (ampPx / 2) * Math.sin(n * Math.PI * x - n * Math.PI * t * 1.5);
+      px === pad ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+    }
+    ctx.stroke();
+    // traveling wave 2 (left)
+    ctx.beginPath();
+    for (let px = pad; px <= W - pad; px++) {
+      const x = (px - pad) / (W - 2 * pad);
+      const y = mid - (ampPx / 2) * Math.sin(n * Math.PI * x + n * Math.PI * t * 1.5);
+      px === pad ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // standing wave (superposition)
+    ctx.strokeStyle = '#38BDF8'; ctx.lineWidth = 2.5 * dpr;
+    ctx.beginPath();
+    for (let px = pad; px <= W - pad; px++) {
+      const x = (px - pad) / (W - 2 * pad);
+      const y = mid - ampPx * Math.sin(n * Math.PI * x) * Math.cos(n * Math.PI * t * 1.5);
+      px === pad ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+    }
+    ctx.stroke();
+
+    // nodes
+    ctx.fillStyle = '#7DD3FC';
+    for (let i = 0; i <= n; i++) {
+      const nx = pad + i * (W - 2 * pad) / n;
+      ctx.beginPath(); ctx.arc(nx, mid, 4 * dpr, 0, Math.PI * 2); ctx.fill();
+    }
+    // antinodes
+    ctx.fillStyle = 'rgba(56,189,248,0.4)';
+    for (let i = 0; i < n; i++) {
+      const nx = pad + (i + 0.5) * (W - 2 * pad) / n;
+      const ay = mid - ampPx * Math.sin(n * Math.PI * (i + 0.5) / n) * Math.cos(n * Math.PI * t * 1.5);
+      ctx.beginPath(); ctx.arc(nx, ay, 5 * dpr, 0, Math.PI * 2); ctx.fill();
+    }
+
+    document.getElementById('s13_readout').textContent =
+      `Modo n=${n} · ${n} semilongitudes de onda · ${n + 1} nodos · ${n} antinodos · f = n·f₁`;
+
+    sim13.raf = requestAnimationFrame(step);
+  }
+  sim13.raf = requestAnimationFrame(step);
+}
+
+['s13_n', 's13_amp'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    const v = parseFloat(this.value);
+    document.getElementById(id + '_val').textContent = id === 's13_n' ? v : v.toFixed(2);
+    drawSim13Static();
+  });
+});
+drawSim13Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 14 — PRESIÓN SOBRE PAREDES
+════════════════════════════════════════════════════ */
+function resetSim14() {
+  drawSim14Static();
+  document.getElementById('s14_readout').textContent = 'Configura los parámetros y presiona Calcular.';
+}
+
+function drawSim14Static() {
+  const canvas = document.getElementById('c14');
+  resize(canvas);
+  drawSim14();
+}
+
+function drawSim14() {
+  const canvas = document.getElementById('c14');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const Htank  = parseFloat(document.getElementById('s14_H').value);
+  const rho    = parseFloat(document.getElementById('s14_rho').value);
+  const fillPc = parseFloat(document.getElementById('s14_fill').value) / 100;
+  const g = 9.8;
+  const Hfluid = Htank * fillPc;
+  const P_base = rho * g * Hfluid;
+  const F_total = rho * g * Hfluid * Hfluid / 2; // per unit width
+
+  const pad = 30 * dpr;
+  const tankL = W * 0.18, tankR = W * 0.55;
+  const tankW = tankR - tankL;
+  const tankTop = pad * 2, tankBot = H - pad * 2;
+  const tankH_px = tankBot - tankTop;
+  const fluidTop = tankBot - fillPc * tankH_px;
+
+  // tank walls
+  ctx.strokeStyle = 'rgba(20,184,166,0.4)'; ctx.lineWidth = 2 * dpr;
+  ctx.beginPath();
+  ctx.moveTo(tankL, tankTop); ctx.lineTo(tankL, tankBot);
+  ctx.lineTo(tankR, tankBot); ctx.lineTo(tankR, tankTop);
+  ctx.stroke();
+
+  // fluid fill
+  const fluidGrad = ctx.createLinearGradient(tankL, fluidTop, tankL, tankBot);
+  fluidGrad.addColorStop(0, 'rgba(20,184,166,0.08)');
+  fluidGrad.addColorStop(1, 'rgba(20,184,166,0.25)');
+  ctx.fillStyle = fluidGrad;
+  ctx.fillRect(tankL, fluidTop, tankW, tankBot - fluidTop);
+
+  // fluid surface line
+  ctx.strokeStyle = 'rgba(20,184,166,0.5)'; ctx.lineWidth = 1.5 * dpr;
+  ctx.beginPath(); ctx.moveTo(tankL, fluidTop); ctx.lineTo(tankR, fluidTop); ctx.stroke();
+
+  // pressure distribution (triangle) on right side
+  const maxArrow = (tankR - pad * 0.5) - tankR;
+  const arrowScale = Math.min((W * 0.3) / P_base, W * 0.3 / 1000);
+  const steps = 20;
+  for (let i = 0; i <= steps; i++) {
+    const frac = i / steps;
+    const depth = frac * Hfluid;
+    const P = rho * g * depth;
+    const py = fluidTop + frac * (tankBot - fluidTop);
+    const arrowLen = P * arrowScale;
+    const alpha = 0.15 + 0.7 * frac;
+    ctx.strokeStyle = `rgba(20,184,166,${alpha})`; ctx.lineWidth = 1.5 * dpr;
+    ctx.beginPath(); ctx.moveTo(tankR, py); ctx.lineTo(tankR + arrowLen, py); ctx.stroke();
+  }
+
+  // pressure triangle outline
+  ctx.fillStyle = 'rgba(20,184,166,0.08)';
+  ctx.beginPath();
+  ctx.moveTo(tankR, fluidTop);
+  ctx.lineTo(tankR + P_base * arrowScale, tankBot);
+  ctx.lineTo(tankR, tankBot);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(20,184,166,0.35)'; ctx.lineWidth = 1 * dpr; ctx.stroke();
+
+  // center of pressure marker
+  const h_cp = fluidTop + (2 / 3) * (tankBot - fluidTop);
+  ctx.strokeStyle = '#14B8A6'; ctx.lineWidth = 2 * dpr;
+  ctx.setLineDash([4 * dpr, 3 * dpr]);
+  ctx.beginPath(); ctx.moveTo(tankL, h_cp); ctx.lineTo(tankR + P_base * arrowScale * 0.5, h_cp); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#14B8A6'; ctx.font = `bold ${9 * dpr}px JetBrains Mono`;
+  ctx.fillText('h_cp = 2H/3', tankL + 4 * dpr, h_cp - 5 * dpr);
+
+  // depth labels
+  ctx.fillStyle = 'rgba(20,184,166,0.6)'; ctx.font = `${9 * dpr}px JetBrains Mono`;
+  ctx.fillText(`H = ${Hfluid.toFixed(1)} m`, tankL + 4 * dpr, fluidTop + 14 * dpr);
+  ctx.fillText(`P_base = ${(P_base / 1000).toFixed(1)} kPa`, tankR + 4 * dpr, tankBot - 4 * dpr);
+  ctx.fillText(`F = ${(F_total / 1000).toFixed(1)} kN/m`, tankR + 4 * dpr, tankBot - 16 * dpr);
+
+  document.getElementById('s14_readout').textContent =
+    `H_fluido = ${Hfluid.toFixed(1)} m · P_base = ${(P_base / 1000).toFixed(2)} kPa · F = ${(F_total / 1000).toFixed(1)} kN/m · h_cp = ${(Hfluid * 2 / 3).toFixed(2)} m`;
+}
+
+['s14_H', 's14_rho', 's14_fill'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    const v = parseFloat(this.value);
+    document.getElementById(id + '_val').textContent =
+      id === 's14_H' ? v.toFixed(1) + ' m' : id === 's14_fill' ? v + '%' : v;
+    drawSim14();
+  });
+});
+drawSim14Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 15 — BERNOULLI / VENTURI
+════════════════════════════════════════════════════ */
+let sim15 = { raf: null };
+
+function resetSim15() {
+  cancelAnimationFrame(sim15.raf);
+  sim15 = { raf: null };
+  drawSim15Static();
+  document.getElementById('s15_readout').textContent = 'Configura diámetros y velocidad de entrada.';
+}
+
+function drawSim15Static() {
+  const canvas = document.getElementById('c15');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const mid = H / 2;
+  const d1 = parseFloat(document.getElementById('s15_d1').value);
+  const d2 = parseFloat(document.getElementById('s15_d2').value);
+  const maxD = 10;
+  const r1 = (d1 / maxD) * H * 0.3;
+  const r2 = (d2 / maxD) * H * 0.3;
+  const x1 = W * 0.1, x2 = W * 0.38, x3 = W * 0.62, x4 = W * 0.9;
+  // pipe outline
+  ctx.fillStyle = 'rgba(99,102,241,0.08)';
+  ctx.beginPath();
+  ctx.moveTo(x1, mid - r1); ctx.lineTo(x2, mid - r1);
+  ctx.lineTo(x3, mid - r2); ctx.lineTo(x4, mid - r2);
+  ctx.lineTo(x4, mid + r2); ctx.lineTo(x3, mid + r2);
+  ctx.lineTo(x2, mid + r1); ctx.lineTo(x1, mid + r1);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(99,102,241,0.5)'; ctx.lineWidth = 1.5 * dpr; ctx.stroke();
+}
+
+function launchSim15() {
+  cancelAnimationFrame(sim15.raf);
+  const d1  = parseFloat(document.getElementById('s15_d1').value) / 100;
+  const d2  = parseFloat(document.getElementById('s15_d2').value) / 100;
+  const v1  = parseFloat(document.getElementById('s15_v1').value);
+  const rho = 1000;
+  const A1  = Math.PI * (d1 / 2) ** 2;
+  const A2  = Math.PI * (d2 / 2) ** 2;
+  const v2  = v1 * A1 / A2;
+  const dP  = 0.5 * rho * (v2 * v2 - v1 * v1);
+  const P1  = 200000; // 2 bar
+  const P2  = P1 - dP;
+  const cavitates = P2 < 2300; // water vapor pressure ~2.3 kPa
+
+  const canvas = document.getElementById('c15');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const mid = H / 2;
+  const maxD = 10;
+  const r1px = (d1 * 100 / maxD) * H * 0.3;
+  const r2px = (d2 * 100 / maxD) * H * 0.3;
+  const x1 = W * 0.1, x2 = W * 0.38, x3 = W * 0.62, x4 = W * 0.9;
+
+  // particles
+  const particles = Array.from({ length: 30 }, () => ({
+    x: x1 + Math.random() * (x4 - x1),
+    y: mid + (Math.random() - 0.5) * 2 * r1px,
+    section: 0
+  }));
+
+  let t = 0;
+
+  function getRadius(px) {
+    if (px <= x2) return r1px;
+    if (px >= x3) return r2px;
+    const frac = (px - x2) / (x3 - x2);
+    return r1px + (r2px - r1px) * frac;
+  }
+
+  function getSpeed(px) {
+    if (px <= x2) return v1;
+    if (px >= x3) return v2;
+    const frac = (px - x2) / (x3 - x2);
+    const r = r1px + (r2px - r1px) * frac;
+    return v1 * (r1px / r) ** 2;
+  }
+
+  function step() {
+    t += 0.016;
+    ctx.clearRect(0, 0, W, H);
+
+    // pipe
+    ctx.fillStyle = 'rgba(99,102,241,0.07)';
+    ctx.beginPath();
+    ctx.moveTo(x1, mid - r1px); ctx.lineTo(x2, mid - r1px);
+    ctx.lineTo(x3, mid - r2px); ctx.lineTo(x4, mid - r2px);
+    ctx.lineTo(x4, mid + r2px); ctx.lineTo(x3, mid + r2px);
+    ctx.lineTo(x2, mid + r1px); ctx.lineTo(x1, mid + r1px);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(99,102,241,0.5)'; ctx.lineWidth = 1.5 * dpr; ctx.stroke();
+
+    // pressure bars above pipe
+    const barMaxH = 60 * dpr;
+    const P_max = P1;
+    // P1 bar
+    const b1H = (P1 / P_max) * barMaxH;
+    ctx.fillStyle = 'rgba(99,102,241,0.3)';
+    ctx.fillRect(x1 + 10 * dpr, mid - r1px - b1H - 10 * dpr, 20 * dpr, b1H);
+    ctx.strokeStyle = '#6366F1'; ctx.lineWidth = 1 * dpr;
+    ctx.strokeRect(x1 + 10 * dpr, mid - r1px - b1H - 10 * dpr, 20 * dpr, b1H);
+    ctx.fillStyle = '#6366F1'; ctx.font = `${8 * dpr}px JetBrains Mono`;
+    ctx.fillText(`${(P1 / 1000).toFixed(0)}kPa`, x1 + 5 * dpr, mid - r1px - b1H - 14 * dpr);
+
+    // P2 bar
+    const b2H = Math.max((P2 / P_max) * barMaxH, 2 * dpr);
+    const p2Color = cavitates ? '#FB7185' : '#6366F1';
+    ctx.fillStyle = cavitates ? 'rgba(251,113,133,0.3)' : 'rgba(99,102,241,0.3)';
+    ctx.fillRect(x3 + 10 * dpr, mid - r2px - b2H - 10 * dpr, 20 * dpr, b2H);
+    ctx.strokeStyle = p2Color; ctx.lineWidth = 1 * dpr;
+    ctx.strokeRect(x3 + 10 * dpr, mid - r2px - b2H - 10 * dpr, 20 * dpr, b2H);
+    ctx.fillStyle = p2Color; ctx.font = `${8 * dpr}px JetBrains Mono`;
+    ctx.fillText(`${(P2 / 1000).toFixed(0)}kPa`, x3 + 5 * dpr, mid - r2px - b2H - 14 * dpr);
+
+    // cavitation warning
+    if (cavitates) {
+      ctx.fillStyle = 'rgba(251,113,133,0.15)';
+      ctx.fillRect(x2, mid - r2px - 5 * dpr, x4 - x2, (r2px + 5 * dpr) * 2);
+      ctx.fillStyle = '#FB7185'; ctx.font = `bold ${10 * dpr}px Space Grotesk`;
+      ctx.fillText('⚠ CAVITACIÓN', x2 + 5 * dpr, mid - r2px + 16 * dpr);
+    }
+
+    // particles
+    particles.forEach(p => {
+      const spd = getSpeed(p.x) * 12 * dpr;
+      p.x += spd * 0.016;
+      const r = getRadius(p.x);
+      const frac = (p.y - mid) / r1px;
+      p.y = mid + frac * r;
+      if (p.x > x4) { p.x = x1; p.y = mid + (Math.random() - 0.5) * 2 * r1px; }
+      const speed = getSpeed(p.x);
+      const alpha = 0.3 + (speed / v2) * 0.5;
+      const color = cavitates && p.x > x2 ? `rgba(251,113,133,${alpha})` : `rgba(129,140,248,${alpha})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = color; ctx.fill();
+    });
+
+    // v labels
+    ctx.fillStyle = '#A5B4FC'; ctx.font = `${9 * dpr}px JetBrains Mono`;
+    ctx.fillText(`v₁=${v1.toFixed(1)}m/s`, x1 + 5 * dpr, mid + r1px + 18 * dpr);
+    ctx.fillText(`v₂=${v2.toFixed(1)}m/s`, x3 + 5 * dpr, mid + r2px + 18 * dpr);
+
+    document.getElementById('s15_readout').textContent =
+      `v₁=${v1.toFixed(1)} m/s · v₂=${v2.toFixed(1)} m/s · P₁=${(P1/1000).toFixed(0)} kPa · P₂=${(P2/1000).toFixed(0)} kPa · ΔP=${(dP/1000).toFixed(1)} kPa${cavitates ? ' · ⚠ CAVITACIÓN' : ''}`;
+
+    sim15.raf = requestAnimationFrame(step);
+  }
+  sim15.raf = requestAnimationFrame(step);
+}
+
+['s15_d1', 's15_d2', 's15_v1'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    const v = parseFloat(this.value);
+    document.getElementById(id + '_val').textContent =
+      id === 's15_v1' ? v.toFixed(2) + ' m/s' : v.toFixed(id === 's15_d2' ? 2 : 1) + ' cm';
+    drawSim15Static();
+  });
+});
+drawSim15Static();
+
+/* ═══════════════════════════════════════════════════
+   SIM 16 — GOLPE DE ARIETE / CAVITACIÓN
+════════════════════════════════════════════════════ */
+let sim16 = { raf: null };
+
+function resetSim16() {
+  cancelAnimationFrame(sim16.raf);
+  sim16 = { raf: null };
+  drawSim16Static();
+  document.getElementById('s16_readout').textContent = 'Configura parámetros y simula el cierre de válvula.';
+}
+
+function drawSim16Static() {
+  const canvas = document.getElementById('c16');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const mid = H / 2, pipeR = 18 * dpr;
+  const x0 = 30 * dpr, x1 = W - 40 * dpr;
+  // pipe
+  ctx.fillStyle = 'rgba(251,113,133,0.06)';
+  ctx.fillRect(x0, mid - pipeR, x1 - x0, pipeR * 2);
+  ctx.strokeStyle = 'rgba(251,113,133,0.35)'; ctx.lineWidth = 1.5 * dpr;
+  ctx.strokeRect(x0, mid - pipeR, x1 - x0, pipeR * 2);
+  // valve (open)
+  ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 3 * dpr;
+  ctx.beginPath(); ctx.moveTo(x1, mid - pipeR - 8 * dpr); ctx.lineTo(x1, mid + pipeR + 8 * dpr); ctx.stroke();
+  // flow arrows
+  for (let x = x0 + 30 * dpr; x < x1 - 20 * dpr; x += 50 * dpr) {
+    ctx.strokeStyle = 'rgba(251,113,133,0.4)'; ctx.lineWidth = 1 * dpr;
+    ctx.beginPath(); ctx.moveTo(x, mid); ctx.lineTo(x + 20 * dpr, mid); ctx.stroke();
+    ctx.fillStyle = 'rgba(251,113,133,0.4)';
+    ctx.beginPath(); ctx.moveTo(x + 20 * dpr, mid); ctx.lineTo(x + 14 * dpr, mid - 4 * dpr); ctx.lineTo(x + 14 * dpr, mid + 4 * dpr); ctx.fill();
+  }
+}
+
+function launchSim16() {
+  cancelAnimationFrame(sim16.raf);
+  const v0 = parseFloat(document.getElementById('s16_v0').value);
+  const L  = parseFloat(document.getElementById('s16_L').value);
+  const tc = parseFloat(document.getElementById('s16_tc').value);
+  const rho = 1000, c = 1400; // water speed of sound ~1400 m/s
+  const dP_max = rho * c * v0;           // Joukowsky formula
+  const t_safe = 2 * L / c;
+  const is_safe = tc >= t_safe;
+  const dP_actual = is_safe ? dP_max * (t_safe / tc) : dP_max;
+  const P_op = 300000; // 3 bar operating
+  const P_peak = P_op + dP_actual;
+
+  const canvas = document.getElementById('c16');
+  resize(canvas);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio;
+  const W = canvas.width, H = canvas.height;
+  const mid = H * 0.48, pipeR = 18 * dpr;
+  const x0 = 30 * dpr, x1 = W - 40 * dpr;
+  const pipeLen = x1 - x0;
+
+  let t = 0;
+  // pressure wave travels left from valve
+  let waveX = x1;
+  const waveSpeed = (pipeLen / L) * c; // px/s mapped
+  // pressure history graph
+  const graphTop = H * 0.72, graphH = H * 0.22;
+  const maxT = 3 * t_safe + 0.5;
+  const pressureHistory = [];
+
+  function step() {
+    t += 0.016;
+    waveX = x1 - (t / (L / c)) * pipeLen;
+    waveX = Math.max(x0, waveX);
+
+    // current valve open fraction
+    const valveOpen = Math.max(0, 1 - t / tc);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // pressure color on affected pipe section
+    const affectedFrac = (t * c / L);
+    const pressColor = is_safe
+      ? `rgba(20,184,166,${Math.min(affectedFrac * 0.3, 0.3)})`
+      : `rgba(251,113,133,${Math.min(affectedFrac * 0.4, 0.4)})`;
+
+    // pipe fill (affected section)
+    ctx.fillStyle = 'rgba(251,113,133,0.06)';
+    ctx.fillRect(x0, mid - pipeR, pipeLen, pipeR * 2);
+    if (t < L / c) {
+      ctx.fillStyle = pressColor;
+      ctx.fillRect(waveX, mid - pipeR, x1 - waveX, pipeR * 2);
+    } else {
+      ctx.fillStyle = pressColor;
+      ctx.fillRect(x0, mid - pipeR, pipeLen, pipeR * 2);
+    }
+
+    // pipe border
+    ctx.strokeStyle = 'rgba(251,113,133,0.35)'; ctx.lineWidth = 1.5 * dpr;
+    ctx.strokeRect(x0, mid - pipeR, pipeLen, pipeR * 2);
+
+    // pressure wave front
+    if (t < L / c + 0.1) {
+      ctx.strokeStyle = is_safe ? '#14B8A6' : '#FB7185'; ctx.lineWidth = 2.5 * dpr;
+      ctx.beginPath();
+      ctx.moveTo(Math.max(waveX, x0), mid - pipeR - 6 * dpr);
+      ctx.lineTo(Math.max(waveX, x0), mid + pipeR + 6 * dpr);
+      ctx.stroke();
+    }
+
+    // valve (closing)
+    const valveH = (pipeR * 2 + 16 * dpr) * (1 - valveOpen);
+    ctx.fillStyle = '#FB7185';
+    ctx.fillRect(x1 - 3 * dpr, mid - pipeR - 8 * dpr, 6 * dpr, valveH);
+    ctx.strokeStyle = '#FB7185'; ctx.lineWidth = 2 * dpr;
+    ctx.beginPath(); ctx.moveTo(x1, mid - pipeR - 8 * dpr); ctx.lineTo(x1, mid + pipeR + 8 * dpr); ctx.stroke();
+
+    // flow arrows (fade with valve closure)
+    if (valveOpen > 0.05) {
+      for (let x = x0 + 30 * dpr; x < (waveX > x0 ? waveX : x1) - 20 * dpr; x += 50 * dpr) {
+        const alpha = valveOpen * 0.5;
+        ctx.strokeStyle = `rgba(251,113,133,${alpha})`; ctx.lineWidth = 1 * dpr;
+        ctx.beginPath(); ctx.moveTo(x, mid); ctx.lineTo(x + 20 * dpr, mid); ctx.stroke();
+      }
+    }
+
+    // ── pressure history graph ──
+    const curP = t < tc
+      ? P_op + (t / tc) * dP_actual * (1 - valveOpen)
+      : P_op + dP_actual * Math.exp(-(t - tc) * 2) * Math.abs(Math.cos(Math.PI * (t - tc) / t_safe));
+    pressureHistory.push({ t, P: curP });
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 0.5 * dpr;
+    ctx.strokeRect(x0, graphTop, pipeLen, graphH);
+
+    // P_op line
+    const pScale = graphH / (dP_max * 1.3);
+    const yOp = graphTop + graphH - (P_op - P_op) * pScale;
+    const yMax = graphTop + graphH - Math.min(dP_actual, dP_max) * pScale;
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 3 * dpr]);
+    ctx.beginPath(); ctx.moveTo(x0, graphTop + graphH); ctx.lineTo(x0 + pipeLen, graphTop + graphH); ctx.stroke();
+    ctx.setLineDash([]);
+    // limit line
+    ctx.strokeStyle = 'rgba(251,113,133,0.4)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([4 * dpr, 3 * dpr]);
+    ctx.beginPath(); ctx.moveTo(x0, yMax); ctx.lineTo(x0 + pipeLen, yMax); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(251,113,133,0.6)'; ctx.font = `${8 * dpr}px JetBrains Mono`;
+    ctx.fillText('ΔP_max', x0 + 2 * dpr, yMax - 3 * dpr);
+
+    // pressure curve
+    if (pressureHistory.length > 1) {
+      ctx.beginPath();
+      pressureHistory.forEach((pt, i) => {
+        const px = x0 + (pt.t / maxT) * pipeLen;
+        const py = graphTop + graphH - (pt.P - P_op) * pScale;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, Math.max(graphTop, py));
+      });
+      ctx.strokeStyle = is_safe ? '#14B8A6' : '#FB7185'; ctx.lineWidth = 2 * dpr; ctx.stroke();
+    }
+
+    // labels
+    ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = `${8 * dpr}px JetBrains Mono`;
+    ctx.fillText('P(t)', x0 + 2 * dpr, graphTop + 12 * dpr);
+
+    const safeLabel = is_safe ? '✓ CIERRE SEGURO' : '⚠ GOLPE DE ARIETE';
+    const safeColor = is_safe ? '#14B8A6' : '#FB7185';
+    document.getElementById('s16_readout').textContent =
+      `${safeLabel} · ΔP = ${(dP_actual / 1000).toFixed(0)} kPa · t_seguro ≥ ${t_safe.toFixed(3)} s · P_pico = ${(P_peak / 1000).toFixed(0)} kPa`;
+
+    if (t < maxT) sim16.raf = requestAnimationFrame(step);
+  }
+  sim16.raf = requestAnimationFrame(step);
+}
+
+['s16_v0', 's16_L', 's16_tc'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function () {
+    const v = parseFloat(this.value);
+    document.getElementById(id + '_val').textContent =
+      id === 's16_v0' ? v.toFixed(1) + ' m/s' : id === 's16_L' ? v + ' m' : v.toFixed(2) + ' s';
+    drawSim16Static();
+  });
+});
+drawSim16Static();
 </script>
 </body>
 </html>
